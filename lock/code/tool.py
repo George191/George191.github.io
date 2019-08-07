@@ -170,7 +170,7 @@ def handle_photo():
     -----------
     最后将data.json文件存到博客的source/photos文件夹下
     '''
-    src_dir, des_dir = "../photos/", "../min_photos/"
+    src_dir, des_dir = "photos/", "min_photos/"
     file_list = list_img_file(src_dir)
     list_info = []
     file_list.sort(key=lambda x: x.split('_')[0])  # 按照日期排序
@@ -204,7 +204,7 @@ def handle_photo():
             list_info[-1]['arr']['type'].append('image')
     list_info.reverse()  # 翻转
     final_dict = {"list": list_info}
-    with open("../data/data.json", "w") as fp:
+    with open("data/data.json", "w") as fp:
         json.dump(final_dict, fp)
 
 
@@ -240,7 +240,7 @@ def git_operation():
     需要安装git命令行工具，并且添加到环境变量中
     :return:
     """
-    os.chdir('../photos')
+    os.chdir('../')
     os.system('git add --all')
     os.system('git commit -m "add photos"')
     os.system('git push origin master')
