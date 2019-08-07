@@ -1,4 +1,4 @@
-
+<link rel="stylesheet" class="aplayer-secondary-style-marker" href="/assets/css/APlayer.min.css"><script src="/assets/js/APlayer.min.js" class="aplayer-secondary-script-marker"></script>
 /******/
 (function(modules) { // webpackBootstrap
     /******/ // The module cache
@@ -128,7 +128,7 @@
             var target = src + (type === 'video' ? '.mp4' : '.jpg');
 
   
-            liTmpl += '<figure class="thumb" itemprop="associatedMedia" itemscope="" itemtype="http://schema.org/ImageObject">\
+            liTmpl += '<figure class="thumb" itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">\
                   <a href="' + minSrc + '" itemprop="contentUrl" data-size="1080x1080" data-type="' + type + '" data-target="' + minSrc + '">\
                     <img class="reward-img" data-type="' + type + '" data-src="' + minSrc + '" src="../lib/album/assets/empty.png" itemprop="thumbnail" onload="lzld(this)">\
                   </a>\
@@ -139,7 +139,7 @@
           <ul class="img-box-ul">' + liTmpl + '</ul>\
           </section>';
         }
-        document.querySelector('.instagram').innerHTML = '<div class="photos" itemscope="" itemtype="http://schema.org/ImageGallery">' + ulTmpl + '</div>';
+        document.querySelector('.instagram').innerHTML = '<div class="photos" itemscope itemtype="http://schema.org/ImageGallery">' + ulTmpl + '</div>';
         createVideoIncon();
         _view2.default.init();
       };
