@@ -15,7 +15,7 @@ $('#sub').click(function(){
               link.source = nodes[link.source] || (nodes[link.source] = {name: link.source});
               link.target = nodes[link.target] || (nodes[link.target] = {name: link.target});
             });
-            var width = 960, height = 960;
+            var width = 920, height = 860;
             var force = d3.layout.force()
                 .nodes(d3.values(nodes))
                 .links(links)
