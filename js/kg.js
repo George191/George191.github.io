@@ -15,18 +15,18 @@ $('#sub').click(function(){
               link.source = nodes[link.source] || (nodes[link.source] = {name: link.source});
               link.target = nodes[link.target] || (nodes[link.target] = {name: link.target});
             });
-            // var width = 1920, height = 1080;
+            var width = 1020, height = 1080;
             var force = d3.layout.force()
                 .nodes(d3.values(nodes))
                 .links(links)
-                // .size([width, height])
+                .size([width, height])
                 .linkDistance(180)
                 .charge(-1500)
                 .on("tick", tick)
                 .start();
             var svg = d3.select("#page").append("svg")
-                // .attr("width", width)
-                // .attr("height", height);
+                .attr("width", width)
+                .attr("height", height);
             var marker=
                 svg.append("marker")
                 .attr("id", "resolved")
