@@ -24,7 +24,7 @@ $('#sub').click(function(){
                 .charge(-1500)
                 .on("tick", tick)
                 .start();
-            var svg = d3.select("body").append("svg")
+            var svg = d3.select("#page").append("svg")
                 .attr("width", width)
                 .attr("height", height);
             var marker=
