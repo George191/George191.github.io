@@ -19,7 +19,7 @@ $('#sub').click(function(){
             var force = d3.layout.force()
                 .nodes(d3.values(nodes))
                 .links(links)
-                .size([width, height])
+                // .size([width, height])
                 .linkDistance(180)
                 .charge(-1500)
                 .on("tick", tick)
