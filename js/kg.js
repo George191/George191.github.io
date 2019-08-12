@@ -25,8 +25,8 @@ $('#sub').click(function(){
                 .on("tick", tick)
                 .start();
             var svg = d3.select("#page").append("svg")
-                .attr("width", width)
-                .attr("height", height);
+                // .attr("width", width)
+                // .attr("height", height);
             var marker=
                 svg.append("marker")
                 .attr("id", "resolved")
