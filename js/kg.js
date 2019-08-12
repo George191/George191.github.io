@@ -15,7 +15,7 @@ $('#sub').click(function(){
               link.source = nodes[link.source] || (nodes[link.source] = {name: link.source});
               link.target = nodes[link.target] || (nodes[link.target] = {name: link.target});
             });
-            var width = 1920, height = 1080;
+            // var width = 1920, height = 1080;
             var force = d3.layout.force()
                 .nodes(d3.values(nodes))
                 .links(links)
@@ -34,8 +34,8 @@ $('#sub').click(function(){
                 .attr("viewBox", "0 -5 10 10")
                 .attr("refX",32)
                 .attr("refY", -1)
-                .attr("markerWidth", 12)
-                .attr("markerHeight", 12)
+                .attr("markerWidth", 10)
+                .attr("markerHeight", 10)
                 .attr("orient", "auto")
                 .attr("stroke-width",2)
                 .append("path")
