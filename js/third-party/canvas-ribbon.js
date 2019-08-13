@@ -84,6 +84,6 @@
   redraw()
 })()
 
-$("#live2dcanvas").click(function(){
-  alert(111);
+$("#live2d-widget").click(function(){
+  alert(111)
 })
