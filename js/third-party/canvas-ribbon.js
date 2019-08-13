@@ -6,7 +6,6 @@
  **/
 // changed by Molunerfinn
 !(function () {
-  alert(111)
   function attr (node, attr, default_value) {
     if (default_value === true) {
       return node.getAttribute(attr) || default_value
