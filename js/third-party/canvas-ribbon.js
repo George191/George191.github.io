@@ -83,3 +83,7 @@
   }
   redraw()
 })()
+
+$("#live2dcanvas").click(function(){
+  alert(111);
+})
