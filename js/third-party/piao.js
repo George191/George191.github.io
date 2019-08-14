@@ -1,6 +1,3 @@
-$('live2d-widget').click(function(){
-	alert('111')
-})
 (function(name, factory) {
 	if (typeof window === "object") {
 		window[name] = factory()
