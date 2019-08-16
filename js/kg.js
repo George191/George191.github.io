@@ -2,7 +2,7 @@ $('#sub').click(function(){
     $('svg').remove();
     $.ajax({
         dataType:"json",
-        url: 'https://api.ownthink.com/kg/knowledge?entity=' + $('#entity').val(),
+        url: 'https://api.ownthink.com/kg/knowledge?entity=' + $('#search').val(),
         type: 'GET',
         success: function(response) {
             var links = []
