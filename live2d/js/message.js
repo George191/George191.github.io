@@ -1,5 +1,3 @@
-var home_Path = document.location.protocol + '//' + window.document.location.hostname + '/';
-
 var userAgent = window.navigator.userAgent.toLowerCase();
 console.log(userAgent);
 var norunAI = ["android", "iphone", "ipod", "ipad", "windows phone", "mqqbrowser", "msie", "trident/7.0"];
@@ -24,7 +22,32 @@ if (!norunFlag){
     var sleepTimer_ = null;
     var AITalkFlag = false;
     var talkNum = 0;
-    $(function () {
+    (function () {
+        $("footer").append('<' +
+        'div id="landlord">' +
+        '   <div class="message" style="opacity:0"></div>' +
+        '   <canvas id="live2d" width="560" height="500" class="live2d"></canvas>' +
+        '   <div class="live_talk_input_body">' +
+        '       <div class="live_talk_input_text_body">' +
+        '           <input name="talk" type="text" class="live_talk_talk white_input" id="AIuserText" autocomplete="off" placeholder="要和我聊什么呀？"/> ' +
+        '           <button type="button" class="live_talk_send_btn" id="talk_send">发送</button> ' +
+        '       </div>' +
+        '   </div> ' +
+        '   <input name="live_talk" id="live_talk" value="1" type="hidden" />' +
+        '    <div class="live_ico_box">' +
+        '       <div class="live_ico_item type_info" id="showInfoBtn"></div>' +
+        '        <div class="live_ico_item type_talk" id="showTalkBtn"></div>' +
+        '        <div class="live_ico_item type_youdu" id="youduButton"></div>' +
+        '        <div class="live_ico_item type_quit" id="hideButton"></div>' +
+        '        <input name="live_statu_val" id="live_statu_val" value="0" type="hidden" />' +
+        '        <input id="duType" value="douqilai,l2d_caihong" type="hidden">' +
+        '    </div>' +
+        '</div>' +
+        '<div id="chatContainer">' +
+        '   <div id="open_live2d">' +
+        '       <i class="iconfont icon-xiaoxi1"></i>' +
+        '   </div>' +
+        '</div>');
         function renderTip(template, context) {
             var tokenReg = /(\\)?\{([^\{\}\\]+)(\\)?\}/g;
             return template.replace(tokenReg, function (word, slash1, token, slash2) {
@@ -60,7 +83,7 @@ if (!norunFlag){
         function initTips() {
             $.ajax({
                 cache: true,
-                url: message_Path + 'message.json',
+                url: '/live2d/message.json',
                 dataType: "json",
                 success: function (result) {
                     $.each(result.mouseover, function (index, tips) {
@@ -126,7 +149,7 @@ if (!norunFlag){
                 text = '嗨！ 来自 谷歌搜索 的朋友！<br>欢迎访问<span style="color:#0099cc;">「 ' + document.title.split(' - ')[0] + ' 」</span>';
             }
         } else {
-            if (window.location.href == ${home_Path}) { //主页URL判断，需要斜杠结尾
+            if (window.location.href == (document.location.protocol + '//' + window.document.location.hostname + '/')) { //主页URL判断，需要斜杠结尾
                 var now = (new Date()).getHours();
                 if (now > 23 || now <= 5) {
                     text = '你是夜猫子呀？这么晚还不睡觉，明天起的来嘛？';
@@ -163,7 +186,7 @@ if (!norunFlag){
             if (!AITalkFlag) {
                 $.getJSON('https://v1.hitokoto.cn/', function (result) {
                     talkValTimer();
-                    showMessage(result.hitokoto, 0);
+                    showMessage(result.hitokoto, 5000);
                 });
             }
         } else {
@@ -180,7 +203,6 @@ if (!norunFlag){
     function checkSleep() {
         var sleepStatu = sessionStorage.getItem("Sleepy");
         if (sleepStatu !== '1') {
-            talkValTimer();
             showMessage('你回来啦~', 0);
             clearInterval(sleepTimer_);
             sleepTimer_ = null;
@@ -212,7 +234,7 @@ if (!norunFlag){
                 return false;
             } else {
                 AIFadeFlag = true;
-                localStorage.setItem("live2dhidden", "0");
+                window.localStorage.setItem("live2dhidden", "0");
                 $('#landlord').fadeOut(200);
                 $('#open_live2d').delay(200).fadeIn(200);
                 setTimeout(function () {
@@ -225,7 +247,7 @@ if (!norunFlag){
                 return false;
             } else {
                 AIFadeFlag = true;
-                localStorage.setItem("live2dhidden", "1");
+                window.localStorage.setItem("live2dhidden", "1");
                 $('#open_live2d').fadeOut(200);
                 $('#landlord').delay(200).fadeIn(200);
                 setTimeout(function () {
@@ -285,21 +307,22 @@ if (!norunFlag){
                     return
                 }
                 ;
-                showMessage('思考中~', 0)
+                showMessage('思考中~', 5000)
                 $.ajax({
                     type: 'POST',
                     url: talkAPI + info_,
                     success: function (res) {
-                        if (res.data.type !== 5000) {
-                            talkValTimer();
-                            showMessage('似乎有什么错误，请和站长联系！', 0);
-                        } else {
-                            talkValTimer();
-                            showMessage(res.data.info.text, 0);
+                        if (res.data.type == 5000) {
+                            rep = res.data.info.text
+                            if (rep != ''){
+                                talkValTimer();
+                                showMessage(rep, 5000);
+                            } else {
+                                showMessage('我不想理你呢', 5000);
+                            }
+                            
                         }
                         console.log(res);
-                        $('#AIuserText').val("");
-                        sessionStorage.setItem("live2duser", userid_);
                     }
                 });
             });
@@ -308,4 +331,22 @@ if (!norunFlag){
             $('#showTalkBtn').hide();
         }
     }
+    $(document).ready(function() {
+        var live2dhidden = localStorage.getItem("live2dhidden");
+        if(live2dhidden==="0"){
+            setTimeout(function(){
+                $('#open_live2d').fadeIn(200);
+            },1300);
+        }else{
+            setTimeout(function(){
+                $('#landlord').fadeIn(200);
+            },1300);
+        }
+        setTimeout(function(){
+            loadlive2d("live2d", "/live2d/model/kesshouban/model.json");
+        },1000);
+        initLive2d ();
+    })
 }
+
+
