@@ -1,4 +1,5 @@
 !function (t) {
+    $("footer").append('<div id="landlord"><div class="message" style="opacity:0"></div><canvas id="live2d" width="560" height="500" class="live2d"></canvas><div class="hide-button">隐藏</div></div>');
     function i(r) {
         if (e[r]) return e[r].exports;
         var o = e[r] = {i: r, l: !1, exports: {}};
@@ -698,6 +699,7 @@
     }
 
     function L(t, i, e) {
+        
         X = void 0 === e ? .5 : e, o(t), n(i)
     }
 
@@ -3742,3 +3744,4 @@
         return null == this.json[this.INIT_PARTS_VISIBLE] || null == this.json[this.INIT_PARTS_VISIBLE][t] ? NaN : this.json[this.INIT_PARTS_VISIBLE][t][this.VALUE]
     }
 }]);
+loadlive2d("live2d", "/live2d/model/kesshouban/model.json");
