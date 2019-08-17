@@ -184,7 +184,7 @@ if (!norunFlag){
             if (!AITalkFlag) {
                 $.getJSON('https://v1.hitokoto.cn/', function (result) {
                     talkValTimer();
-                    showMessage(result.hitokoto, 500);
+                    showMessage(result.hitokoto, 5000);
                 });
             }
         } else {
