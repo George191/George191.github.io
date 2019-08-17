@@ -1,6 +1,6 @@
 
 $(document).on('click','.bookmark-ok',function (){
-    console.log(111);
+    $(this).parents('#fancybox-container-3').remove();
 })
 $('#sub').click(function(){
     $.ajax({
