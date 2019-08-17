@@ -177,14 +177,14 @@ if (!norunFlag){
 
     liveTlakTimer = setInterval(function () {
         showHitokoto();
-    }, 15000);
+    }, 50000);
 
     function showHitokoto() {
         if (sessionStorage.getItem("Sleepy") !== "1") {
             if (!AITalkFlag) {
                 $.getJSON('https://v1.hitokoto.cn/', function (result) {
                     talkValTimer();
-                    showMessage(result.hitokoto, 5000);
+                    showMessage(result.hitokoto, 500);
                 });
             }
         } else {
@@ -201,7 +201,7 @@ if (!norunFlag){
     function checkSleep() {
         var sleepStatu = sessionStorage.getItem("Sleepy");
         if (sleepStatu !== '1') {
-            showMessage('你回来啦~', 0);
+            showMessage('你回来啦~', 1000);
             clearInterval(sleepTimer_);
             sleepTimer_ = null;
         }
