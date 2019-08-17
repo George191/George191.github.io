@@ -1,3 +1,7 @@
+
+$(document).on('click','.bookmark-ok',function (){
+    console.log(111);
+})
 $('#sub').click(function(){
     $.ajax({
         dataType:"json",
@@ -5,7 +9,23 @@ $('#sub').click(function(){
         type: 'GET',
         success: function(response) {
             if (response.message == "error"){
-                alert('这个知识点我还没有学到，我该去学习了');
+                $('body').append('' +
+                    '<div class="fancybox-container fc-container fancybox-is-modal fancybox-is-open" role="dialog" tabindex="-1" id="fancybox-container-3" style="transition-duration: 350ms;">' +
+                    '   <div class="fancybox-bg"></div>' +
+                    '   <div class="fancybox-inner">' +
+                    '       <div class="fancybox-stage">' +
+                    '           <div class="fancybox-slide fancybox-slide--html fancybox-slide--current fancybox-slide--complete" style="">' +
+                    '               <div class="fc-content fancybox-content" style="">' +
+                    '                   <h3>精神升华中～</h3>' +
+                    '                   <p>等我学会这个知识点 我再告诉你吧</p>' +
+                    '                   <p class="tright">' +
+                    '                       <button data-value="1" data-fancybox-close="" class="bookmark-ok">OK</button>' +
+                    '                   </p>' +
+                    '               </div>' +
+                    '           </div>' +
+                    '       </div>' +
+                    '    </div>' +
+                    '</div>');
                 return;
             }
             $('svg').remove();
