@@ -1,10 +1,14 @@
 $('#sub').click(function(){
-    $('svg').remove();
     $.ajax({
         dataType:"json",
         url: 'https://api.ownthink.com/kg/knowledge?entity=' + $('#search').val(),
         type: 'GET',
         success: function(response) {
+            if (response.message == "error"){
+                alert('这个知识点我还没有学到，我该去学习了');
+                return;
+            }
+            $('svg').remove();
             var links = []
             for(avp in response.data.avp)
                 if(response.data.avp[avp][1] != response.data.entity)
@@ -89,6 +93,8 @@ $('#sub').click(function(){
                 .attr("r", 28)
                 .on("click",function(node)
                 {
+                    $('#search').val(node.name);
+                    $('#sub').click();
                     edges_line.style("stroke-width",function(line){
                         console.log(line);
                         if(line.source.name==node.name || line.target.name==node.name){
