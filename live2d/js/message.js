@@ -37,10 +37,8 @@ if (!norunFlag){
         '    <div class="live_ico_box">' +
         '       <div class="live_ico_item type_info" id="showInfoBtn"></div>' +
         '        <div class="live_ico_item type_talk" id="showTalkBtn"></div>' +
-        '        <div class="live_ico_item type_youdu" id="youduButton"></div>' +
         '        <div class="live_ico_item type_quit" id="hideButton"></div>' +
         '        <input name="live_statu_val" id="live_statu_val" value="0" type="hidden" />' +
-        '        <input id="duType" value="douqilai,l2d_caihong" type="hidden">' +
         '    </div>' +
         '</div>' +
         '<div id="chatContainer">' +
@@ -253,22 +251,6 @@ if (!norunFlag){
                 setTimeout(function () {
                     AIFadeFlag = false;
                 }, 300);
-            }
-        });
-        $('#youduButton').on('click', function () {
-            if ($('#youduButton').hasClass('doudong')) {
-                var typeIs = $('#youduButton').attr('data-type');
-                $('#youduButton').removeClass('doudong');
-                $('body').removeClass(typeIs);
-                $('#youduButton').attr('data-type', '');
-            } else {
-                var duType = $('#duType').val();
-                var duArr = duType.split(",");
-                var dataType = duArr[Math.floor(Math.random() * duArr.length)];
-
-                $('#youduButton').addClass('doudong');
-                $('#youduButton').attr('data-type', dataType);
-                $('body').addClass(dataType);
             }
         });
 
