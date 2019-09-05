@@ -2,51 +2,72 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://www.george191.com/AI/index.html</loc>
+    <loc>http://www.george191.com/tags/index.html</loc>
     
-    <lastmod>2019-08-18T03:50:38.319Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.george191.com/2019/08/06/tensorflow-cpp/</loc>
-    
-    <lastmod>2019-08-13T13:25:11.452Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.george191.com/2019/08/06/nginx+uwsgi+django/</loc>
-    
-    <lastmod>2019-08-13T13:22:33.657Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.george191.com/2019/08/06/Jupyter-kernel/</loc>
-    
-    <lastmod>2019-08-13T13:21:59.637Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.george191.com/2019/08/06/%E9%85%8D%E7%BD%AE%20pip%20%E5%86%85%E7%BD%91%E6%BA%90/</loc>
-    
-    <lastmod>2019-08-13T13:20:52.353Z</lastmod>
+    <lastmod>2019-09-05T14:00:52.862Z</lastmod>
     
   </url>
   
   <url>
     <loc>http://www.george191.com/categories/index.html</loc>
     
-    <lastmod>2019-08-09T12:28:21.243Z</lastmod>
+    <lastmod>2019-09-05T14:00:10.556Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://www.george191.com/tags/index.html</loc>
+    <loc>http://www.george191.com/2019/08/06/tensorflow-cpp/</loc>
     
-    <lastmod>2019-08-09T12:25:35.695Z</lastmod>
+    <lastmod>2019-09-05T13:15:17.733Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.george191.com/2019/08/06/nginx+uwsgi+django/</loc>
+    
+    <lastmod>2019-09-05T13:14:51.047Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.george191.com/2019/08/06/Jupyter-kernel/</loc>
+    
+    <lastmod>2019-09-05T13:14:42.391Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.george191.com/search/index.html</loc>
+    
+    <lastmod>2019-09-05T13:12:50.241Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.george191.com/movies/index.html</loc>
+    
+    <lastmod>2019-09-05T13:12:44.648Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.george191.com/friends/index.html</loc>
+    
+    <lastmod>2019-09-05T13:12:38.485Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.george191.com/albums/index.html</loc>
+    
+    <lastmod>2019-09-05T13:12:27.339Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.george191.com/AI/index.html</loc>
+    
+    <lastmod>2019-09-05T13:10:35.880Z</lastmod>
     
   </url>
   
