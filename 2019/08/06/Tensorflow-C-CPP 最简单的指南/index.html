@@ -1,0 +1,727 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.9.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><title>tensorflow C C++ 最官方编译指南 | George</title><meta name="description" content="平时我们训练都是python，因为他很方便， 但是落地的产品上可能很要求运行的速度，这就体现了c/c++的优势"><meta name="keywords" content="C++,tensorflow"><meta name="author" content="George"><meta name="copyright" content="George"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/img/logo.ico"><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@latest/css/font-awesome.min.css"><link rel="stylesheet" href="/live2d/css/live2d.css"><link rel="stylesheet" href="/css/search.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><meta http-equiv="x-dns-prefetch-control" content="on"><link rel="canonical" href="http://www.george191.com/2019/08/06/Tensorflow-C-CPP 最简单的指南/"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="tensorflow C C++ 最官方编译指南"><meta name="twitter:description" content="平时我们训练都是python，因为他很方便， 但是落地的产品上可能很要求运行的速度，这就体现了c/c++的优势"><meta name="twitter:image" content="https://s2.ax1x.com/2019/08/10/eq427Q.jpg"><meta property="og:type" content="article"><meta property="og:title" content="tensorflow C C++ 最官方编译指南"><meta property="og:url" content="http://www.george191.com/2019/08/06/Tensorflow-C-CPP 最简单的指南/"><meta property="og:site_name" content="George"><meta property="og:description" content="平时我们训练都是python，因为他很方便， 但是落地的产品上可能很要求运行的速度，这就体现了c/c++的优势"><meta property="og:image" content="https://s2.ax1x.com/2019/08/10/eq427Q.jpg"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="prev" title="Jupyter C JAVA 快速内核搭建" href="http://www.george191.com/2019/08/06/Jupyter-C-JAVA超快速内核配置/"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js"></script><script src="https://cdn.jsdelivr.net/npm/blueimp-md5@2.10.0/js/md5.min.js"></script><meta name="google-site-verification" content="zo0NgNaowlonHnavhSI9pULzAl096bCpaqfqSpAa37E"><meta name="baidu-site-verification" content="eWA9WYyIQ5"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: {"defaultEncoding":2,"translateDelay":0,"cookieDomain":"https://www.george191.com","msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"简"},
+  highlight_copy: 'true',
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    title: '添加书签',
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime_unit: '天'
+
+  
+}</script></head><body><i class="fa fa-arrow-right" id="toggle-sidebar" aria-hidden="true"></i><div class="auto_open" id="sidebar"><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar"></div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#C-过程"><span class="toc-number">1.</span> <span class="toc-text">C++ 过程</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#源码"><span class="toc-number">1.0.1.</span> <span class="toc-text">源码</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#bazel"><span class="toc-number">1.0.2.</span> <span class="toc-text">bazel</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#Windows-CPU"><span class="toc-number">1.0.2.0.1.</span> <span class="toc-text">Windows-CPU</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#Linux-CPU"><span class="toc-number">1.0.2.0.2.</span> <span class="toc-text">Linux-CPU</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#MacOS-CPU"><span class="toc-number">1.0.2.0.3.</span> <span class="toc-text">MacOS-CPU</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#Windows-GPU"><span class="toc-number">1.0.2.0.4.</span> <span class="toc-text">Windows-GPU</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#Linux-GPU"><span class="toc-number">1.0.2.0.5.</span> <span class="toc-text">Linux-GPU</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#MacOS-GPU"><span class="toc-number">1.0.2.0.6.</span> <span class="toc-text">MacOS-GPU</span></a></li></ol></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#protobuf"><span class="toc-number">1.0.3.</span> <span class="toc-text">protobuf</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#动态库"><span class="toc-number">1.0.4.</span> <span class="toc-text">动态库</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#环境变量"><span class="toc-number">1.0.5.</span> <span class="toc-text">环境变量</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#示例程序"><span class="toc-number">1.0.6.</span> <span class="toc-text">示例程序</span></a></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#C-过程-1"><span class="toc-number">2.</span> <span class="toc-text">C 过程</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#下载"><span class="toc-number">2.0.1.</span> <span class="toc-text">下载</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#解压缩"><span class="toc-number">2.0.2.</span> <span class="toc-text">解压缩</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#连接器"><span class="toc-number">2.0.3.</span> <span class="toc-text">连接器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#示例程序-1"><span class="toc-number">2.0.4.</span> <span class="toc-text">示例程序</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#编译"><span class="toc-number">2.0.5.</span> <span class="toc-text">编译</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#参数含义"><span class="toc-number">2.0.5.0.1.</span> <span class="toc-text">参数含义:</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#a-I-usr-local-include-tf-gt-依赖的include文件"><span class="toc-number">2.0.5.0.2.</span> <span class="toc-text">a) -I/usr/local/include/tf &gt; 依赖的include文件</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#b-L-usr-local-lib-libtensorflow-cc-gt-编译好的libtensorflow-cc-so文件所在的目录"><span class="toc-number">2.0.5.0.3.</span> <span class="toc-text">b) -L/usr/local/lib/libtensorflow_cc &gt; 编译好的libtensorflow_cc.so文件所在的目录</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#c-ltensorflow-cc-gt-so动态库的名字"><span class="toc-number">2.0.5.0.4.</span> <span class="toc-text">c) -ltensorflow_cc &gt; .so动态库的名字</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-number">3.</span> <span class="toc-text">总结</span></a></li></div></div></div><div id="content-outer"><div id="top-container" style="background-image: url(https://s2.ax1x.com/2019/08/10/eq427Q.jpg)"><div id="page-header"><span class="pull-left"> <a class="blog_title" id="site-name" href="/">George</a></span><div class="open toggle-menu pull-right"><div class="menu-icon-first"></div><div class="menu-icon-second"></div><div class="menu-icon-third"></div></div><span class="pull-right menus"><div class="mobile_author_icon"><img class="lozad" data-src="https://s2.ax1x.com/2019/08/09/eq3sER.png" onerror="onerror=null;src='https://s2.ax1x.com/2019/08/09/eq364x.gif'"><div class="mobile_author-info__description">一个啥都往上写的大杂烩</div></div><hr><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 主页</span></a><a class="site-page" href="/albums/"><i class="fa-fw fa fa-photo"></i><span> 相册</span></a><a class="site-page" href="/movies/"><i class="fa-fw fa fa-video-camera"></i><span> 视频</span></a><a class="site-page" href="/AI/"><i class="fa-fw fa fa-graduation-cap"></i><span> 图谱</span></a><a class="site-page" href="/frients"><i class="fa-fw fa fa-address-book"></i><span> 友链</span></a><a class="site-page" href="/search/"><i class="fa-fw fa fa-search"></i><span> 导航</span></a><script>document.body.addEventListener('touchstart', function(){ });</script></div></span><span class="pull-right"></span></div><div id="post-info"><div id="post-title"><div class="posttitle">tensorflow C C++ 最官方编译指南</div></div><div id="post-meta"><time class="post-meta__date"><i class="fa fa-calendar" aria-hidden="true"></i> 发表于 2019-08-06<span class="post-meta__separator">|</span><i class="fa fa-history" aria-hidden="true"></i> 更新于 2019-09-12</time><span class="post-meta__separator mobile_hidden">|</span><span class="mobile_hidden"><i class="fa fa-inbox post-meta__icon" aria-hidden="true"></i><a class="post-meta__categories" href="/categories/环境搭建/">环境搭建</a></span></div></div></div><div class="layout layout_post" id="content-inner">   <article id="post"><div class="article-container" id="post-content"><a id="more"></a>
+
+<ul>
+<li><a href="#">目录</a></li>
+<li><a href="#C-过程">C++过程</a><ul>
+<li><a href="#源码">1. 下载 tensorflow 源码</a></li>
+<li><a href="#bazel">2. 安装 bazel</a><ul>
+<li><a href="#windows-cpu">Windows-CPU</a></li>
+<li><a href="#linux-cpu">Linux-CPU</a></li>
+<li><a href="#macos-cpu">MacOS-CPU</a></li>
+<li><a href="#windows-gpu">Windows-GPU</a></li>
+<li><a href="#linux-gpu">Linux-GPU</a></li>
+<li><a href="#macos-gpu">MacOS-GPU</a></li>
+</ul>
+</li>
+<li><a href="#protobuf">3. 最重要的一个，也是最恶心人的一个库 protobuf</a></li>
+<li><a href="#动态库">4. 编译源码,生成 C++ 动态库</a></li>
+<li><a href="#环境变量">5. 环境变量</a></li>
+<li><a href="#示例程序">6. 示例程序</a></li>
+</ul>
+</li>
+<li><a href="#c-过程">C 过程</a><ul>
+<li><a href="#下载">1. 下载</a></li>
+<li><a href="#解压缩">2. 解压缩</a></li>
+<li><a href="#连接器">3. 连接器</a></li>
+<li><a href="#示例程序">4. 示例程序</a></li>
+<li><a href="#编译">5. 编译</a><ul>
+<li><a href="#参数含义">参数含义</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#总结">总结</a></li>
+</ul>
+<h2 id="C-过程"><a href="#C-过程" class="headerlink" title="C++ 过程"></a>C++ 过程</h2><h4 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h4><p> 我这里用的是<a href="https://codeload.github.com/tensorflow/tensorflow/zip/v1.13.1" target="_blank" rel="noopener">tensorflow 1.13.1</a>版本</p>
+<h4 id="bazel"><a href="#bazel" class="headerlink" title="bazel"></a>bazel</h4><p> 我这里系统是Windows下的WSL, 通过Windows的VsCode Remote 到 WSL 可以实现 Windows 写代码 但是环境都是Linux的 很方便</p>
+<p> 这个东西也有版本要求，但是没那么严格必须1v1,我这用的<a href="https://github.com/bazelbuild/bazel/releases/tag/0.19.2" target="_blank" rel="noopener">0.19.2</a>我之前也用<a href="https://github.com/bazelbuild/bazel/releases/tag/0.20.0" target="_blank" rel="noopener">0.20.0</a>编译过这个版本,也是可行的, 也可以参考下边的工具对应版本, MacOS和Linux大差不差 Windows 稍微不太一样</p>
+<h6 id="Windows-CPU"><a href="#Windows-CPU" class="headerlink" title="Windows-CPU"></a>Windows-CPU</h6><table>
+<thead>
+<tr>
+<th align="center">版本</th>
+<th align="center">Python 版本</th>
+<th align="center">编译器</th>
+<th align="center">编译工具</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">tensorflow-1.13.0</td>
+<td align="center">3.5-3.6</td>
+<td align="center">MSVC 2015 update 3</td>
+<td align="center">Cmake v3.6.3</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.12.0</td>
+<td align="center">3.5-3.6</td>
+<td align="center">MSVC 2015 update 3</td>
+<td align="center">Cmake v3.6.3</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.11.0</td>
+<td align="center">3.5-3.6</td>
+<td align="center">MSVC 2015 update 3</td>
+<td align="center">Cmake v3.6.3</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.10.0</td>
+<td align="center">3.5-3.6</td>
+<td align="center">MSVC 2015 update 3</td>
+<td align="center">Cmake v3.6.3</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.9.0</td>
+<td align="center">3.5-3.6</td>
+<td align="center">MSVC 2015 update 3</td>
+<td align="center">Cmake v3.6.3</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.8.0</td>
+<td align="center">3.5-3.6</td>
+<td align="center">MSVC 2015 update 3</td>
+<td align="center">Cmake v3.6.3</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.7.0</td>
+<td align="center">3.5-3.6</td>
+<td align="center">MSVC 2015 update 3</td>
+<td align="center">Cmake v3.6.3</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.6.0</td>
+<td align="center">3.5-3.6</td>
+<td align="center">MSVC 2015 update 3</td>
+<td align="center">Cmake v3.6.3</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.5.0</td>
+<td align="center">3.5-3.6</td>
+<td align="center">MSVC 2015 update 3</td>
+<td align="center">Cmake v3.6.3</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.4.0</td>
+<td align="center">3.5-3.6</td>
+<td align="center">MSVC 2015 update 3</td>
+<td align="center">Cmake v3.6.3</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.3.0</td>
+<td align="center">3.5-3.6</td>
+<td align="center">MSVC 2015 update 3</td>
+<td align="center">Cmake v3.6.3</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.2.0</td>
+<td align="center">3.5-3.6</td>
+<td align="center">MSVC 2015 update 3</td>
+<td align="center">Cmake v3.6.3</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.1.0</td>
+<td align="center">3.5</td>
+<td align="center">MSVC 2015 update 3</td>
+<td align="center">Cmake v3.6.3</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.0.0</td>
+<td align="center">3.5</td>
+<td align="center">MSVC 2015 update 3</td>
+<td align="center">Cmake v3.6.3</td>
+</tr>
+</tbody></table>
+<h6 id="Linux-CPU"><a href="#Linux-CPU" class="headerlink" title="Linux-CPU"></a>Linux-CPU</h6><table>
+<thead>
+<tr>
+<th align="center">版本</th>
+<th align="center">Python 版本</th>
+<th align="center">编译器</th>
+<th align="center">编译工具</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">tensorflow-1.13.1</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">GCC 4.8</td>
+<td align="center">Bazel 0.19.2</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.12.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">GCC 4.8</td>
+<td align="center">Bazel 0.15.0</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.11.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">GCC 4.8</td>
+<td align="center">Bazel 0.15.0</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.10.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">GCC 4.8</td>
+<td align="center">Bazel 0.15.0</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.9.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">GCC 4.8</td>
+<td align="center">Bazel 0.11.0</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.8.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">GCC 4.8</td>
+<td align="center">Bazel 0.10.0</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.7.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">GCC 4.8</td>
+<td align="center">Bazel 0.10.0</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.6.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">GCC 4.8</td>
+<td align="center">Bazel 0.9.0</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.5.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">GCC 4.8</td>
+<td align="center">Bazel 0.8.0</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.4.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">GCC 4.8</td>
+<td align="center">Bazel 0.5.4</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.3.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">GCC 4.8</td>
+<td align="center">Bazel 0.4.5</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.2.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">GCC 4.8</td>
+<td align="center">Bazel 0.4.5</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.1.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">GCC 4.8</td>
+<td align="center">Bazel 0.4.2</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.0.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">GCC 4.8</td>
+<td align="center">Bazel 0.4.2</td>
+</tr>
+</tbody></table>
+<h6 id="MacOS-CPU"><a href="#MacOS-CPU" class="headerlink" title="MacOS-CPU"></a>MacOS-CPU</h6><table>
+<thead>
+<tr>
+<th align="center">版本</th>
+<th align="center">Python 版本</th>
+<th align="center">编译器</th>
+<th align="center">编译工具</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">tensorflow-1.13.1</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">XCode 中的 Clang</td>
+<td align="center">Bazel 0.19.2</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.12.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">XCode 中的 Clang</td>
+<td align="center">Bazel 0.15.0</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.11.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">XCode 中的 Clang</td>
+<td align="center">Bazel 0.15.0</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.10.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">XCode 中的 Clang</td>
+<td align="center">Bazel 0.15.0</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.9.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">XCode 中的 Clang</td>
+<td align="center">Bazel 0.11.0</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.8.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">XCode 中的 Clang</td>
+<td align="center">Bazel 0.10.1</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.7.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">XCode 中的 Clang</td>
+<td align="center">Bazel 0.10.1</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.6.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">XCode 中的 Clang</td>
+<td align="center">Bazel 0.8.1</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.5.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">XCode 中的 Clang</td>
+<td align="center">Bazel 0.8.1</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.4.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">XCode 中的 Clang</td>
+<td align="center">Bazel 0.5.4</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.3.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">XCode 中的 Clang</td>
+<td align="center">Bazel 0.4.5</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.2.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">XCode 中的 Clang</td>
+<td align="center">Bazel 0.4.5</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.1.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">XCode 中的 Clang</td>
+<td align="center">Bazel 0.4.2</td>
+</tr>
+<tr>
+<td align="center">tensorflow-1.0.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">XCode 中的 Clang</td>
+<td align="center">Bazel 0.4.2</td>
+</tr>
+</tbody></table>
+<h6 id="Windows-GPU"><a href="#Windows-GPU" class="headerlink" title="Windows-GPU"></a>Windows-GPU</h6><table>
+<thead>
+<tr>
+<th align="center">版本</th>
+<th align="center">Python 版本</th>
+<th align="center">编译器</th>
+<th align="center">编译工具</th>
+<th align="center">cuDNN</th>
+<th align="center">CUDA</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">tensorflow_gpu-1.13.0</td>
+<td align="center">3.5-3.6</td>
+<td align="center">MSVC 2015 update 3</td>
+<td align="center">Bazel 0.15.0</td>
+<td align="center">7</td>
+<td align="center">9</td>
+</tr>
+<tr>
+<td align="center">tensorflow_gpu-1.12.0</td>
+<td align="center">3.5-3.6</td>
+<td align="center">MSVC 2015 update 3</td>
+<td align="center">Bazel 0.15.0</td>
+<td align="center">7</td>
+<td align="center">9</td>
+</tr>
+<tr>
+<td align="center">tensorflow_gpu-1.11.0</td>
+<td align="center">3.5-3.6</td>
+<td align="center">MSVC 2015 update 3</td>
+<td align="center">Bazel 0.15.0</td>
+<td align="center">7</td>
+<td align="center">9</td>
+</tr>
+<tr>
+<td align="center">tensorflow_gpu-1.10.0</td>
+<td align="center">3.5-3.6</td>
+<td align="center">MSVC 2015 update 3</td>
+<td align="center">Cmake v3.6.3</td>
+<td align="center">7</td>
+<td align="center">9</td>
+</tr>
+<tr>
+<td align="center">tensorflow_gpu-1.9.0</td>
+<td align="center">3.5-3.6</td>
+<td align="center">MSVC 2015 update 3</td>
+<td align="center">Cmake v3.6.3</td>
+<td align="center">7</td>
+<td align="center">9</td>
+</tr>
+<tr>
+<td align="center">tensorflow_gpu-1.8.0</td>
+<td align="center">3.5-3.6</td>
+<td align="center">MSVC 2015 update 3</td>
+<td align="center">Cmake v3.6.3</td>
+<td align="center">7</td>
+<td align="center">9</td>
+</tr>
+<tr>
+<td align="center">tensorflow_gpu-1.7.0</td>
+<td align="center">3.5-3.6</td>
+<td align="center">MSVC 2015 update 3</td>
+<td align="center">Cmake v3.6.3</td>
+<td align="center">7</td>
+<td align="center">9</td>
+</tr>
+<tr>
+<td align="center">tensorflow_gpu-1.6.0</td>
+<td align="center">3.5-3.6</td>
+<td align="center">MSVC 2015 update 3</td>
+<td align="center">Cmake v3.6.3</td>
+<td align="center">7</td>
+<td align="center">9</td>
+</tr>
+<tr>
+<td align="center">tensorflow_gpu-1.5.0</td>
+<td align="center">3.5-3.6</td>
+<td align="center">MSVC 2015 update 3</td>
+<td align="center">Cmake v3.6.3</td>
+<td align="center">7</td>
+<td align="center">9</td>
+</tr>
+<tr>
+<td align="center">tensorflow_gpu-1.4.0</td>
+<td align="center">3.5-3.6</td>
+<td align="center">MSVC 2015 update 3</td>
+<td align="center">Cmake v3.6.3</td>
+<td align="center">6</td>
+<td align="center">8</td>
+</tr>
+<tr>
+<td align="center">tensorflow_gpu-1.3.0</td>
+<td align="center">3.5-3.6</td>
+<td align="center">MSVC 2015 update 3</td>
+<td align="center">Cmake v3.6.3</td>
+<td align="center">6</td>
+<td align="center">8</td>
+</tr>
+<tr>
+<td align="center">tensorflow_gpu-1.2.0</td>
+<td align="center">3.5-3.6</td>
+<td align="center">MSVC 2015 update 3</td>
+<td align="center">Cmake v3.6.3</td>
+<td align="center">5.1</td>
+<td align="center">8</td>
+</tr>
+<tr>
+<td align="center">tensorflow_gpu-1.1.0</td>
+<td align="center">3.5</td>
+<td align="center">MSVC 2015 update 3</td>
+<td align="center">Cmake v3.6.3</td>
+<td align="center">5.1</td>
+<td align="center">8</td>
+</tr>
+<tr>
+<td align="center">tensorflow_gpu-1.0.0</td>
+<td align="center">3.5</td>
+<td align="center">MSVC 2015 update 3</td>
+<td align="center">Cmake v3.6.3</td>
+<td align="center">5.1</td>
+<td align="center">8</td>
+</tr>
+</tbody></table>
+<h6 id="Linux-GPU"><a href="#Linux-GPU" class="headerlink" title="Linux-GPU"></a>Linux-GPU</h6><table>
+<thead>
+<tr>
+<th align="center">版本</th>
+<th align="center">Python 版本</th>
+<th align="center">编译器</th>
+<th align="center">编译工具</th>
+<th align="center">cuDNN</th>
+<th align="center">CUDA</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">tensorflow_gpu-1.13.1</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">GCC 4.8</td>
+<td align="center">Bazel 0.19.2</td>
+<td align="center">7.4</td>
+<td align="center">10.0</td>
+</tr>
+<tr>
+<td align="center">tensorflow_gpu-1.12.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">GCC 4.8</td>
+<td align="center">Bazel 0.15.0</td>
+<td align="center">7</td>
+<td align="center">9</td>
+</tr>
+<tr>
+<td align="center">tensorflow_gpu-1.11.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">GCC 4.8</td>
+<td align="center">Bazel 0.15.0</td>
+<td align="center">7</td>
+<td align="center">9</td>
+</tr>
+<tr>
+<td align="center">tensorflow_gpu-1.10.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">GCC 4.8</td>
+<td align="center">Bazel 0.15.0</td>
+<td align="center">7</td>
+<td align="center">9</td>
+</tr>
+<tr>
+<td align="center">tensorflow_gpu-1.9.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">GCC 4.8</td>
+<td align="center">Bazel 0.11.0</td>
+<td align="center">7</td>
+<td align="center">9</td>
+</tr>
+<tr>
+<td align="center">tensorflow_gpu-1.8.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">GCC 4.8</td>
+<td align="center">Bazel 0.10.0</td>
+<td align="center">7</td>
+<td align="center">9</td>
+</tr>
+<tr>
+<td align="center">tensorflow_gpu-1.7.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">GCC 4.8</td>
+<td align="center">Bazel 0.9.0</td>
+<td align="center">7</td>
+<td align="center">9</td>
+</tr>
+<tr>
+<td align="center">tensorflow_gpu-1.6.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">GCC 4.8</td>
+<td align="center">Bazel 0.9.0</td>
+<td align="center">7</td>
+<td align="center">9</td>
+</tr>
+<tr>
+<td align="center">tensorflow_gpu-1.5.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">GCC 4.8</td>
+<td align="center">Bazel 0.8.0</td>
+<td align="center">7</td>
+<td align="center">9</td>
+</tr>
+<tr>
+<td align="center">tensorflow_gpu-1.4.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">GCC 4.8</td>
+<td align="center">Bazel 0.5.4</td>
+<td align="center">6</td>
+<td align="center">8</td>
+</tr>
+<tr>
+<td align="center">tensorflow_gpu-1.3.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">GCC 4.8</td>
+<td align="center">Bazel 0.4.5</td>
+<td align="center">6</td>
+<td align="center">8</td>
+</tr>
+<tr>
+<td align="center">tensorflow_gpu-1.2.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">GCC 4.8</td>
+<td align="center">Bazel 0.4.5</td>
+<td align="center">5.1</td>
+<td align="center">8</td>
+</tr>
+<tr>
+<td align="center">tensorflow_gpu-1.1.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">GCC 4.8</td>
+<td align="center">Bazel 0.4.2</td>
+<td align="center">5.1</td>
+<td align="center">8</td>
+</tr>
+<tr>
+<td align="center">tensorflow_gpu-1.0.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">GCC 4.8</td>
+<td align="center">Bazel 0.4.2</td>
+<td align="center">5.1</td>
+<td align="center">8</td>
+</tr>
+</tbody></table>
+<h6 id="MacOS-GPU"><a href="#MacOS-GPU" class="headerlink" title="MacOS-GPU"></a>MacOS-GPU</h6><table>
+<thead>
+<tr>
+<th align="center">版本</th>
+<th align="center">Python 版本</th>
+<th align="center">编译器</th>
+<th align="center">编译工具</th>
+<th align="center">cuDNN</th>
+<th align="center">CUDA</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">tensorflow_gpu-1.1.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">XCode 中的 Clang</td>
+<td align="center">Bazel 0.4.2</td>
+<td align="center">5.1</td>
+<td align="center">8</td>
+</tr>
+<tr>
+<td align="center">tensorflow_gpu-1.0.0</td>
+<td align="center">2.7、3.3-3.6</td>
+<td align="center">XCode 中的 Clang</td>
+<td align="center">Bazel 0.4.2</td>
+<td align="center">5.1</td>
+<td align="center">8</td>
+</tr>
+</tbody></table>
+<h4 id="protobuf"><a href="#protobuf" class="headerlink" title="protobuf"></a>protobuf</h4><p> 最重要的一个，也是最恶心人的一个库 </p>
+<p> 这个弄不好,就算C/C++动态库编译好了, C/C++代码也编译不了   </p>
+<p> 这个我试过自己随便装一个（铁定凉）</p>
+<p> 然后试图用tensorflow/contrib/makefile下的 build_all_linux.sh 来下载（也凉了, 不知道什么鬼设定对应版本下边的依赖也是只下载最新的）</p>
+<p> 不过这个还是要执行的 因为后期 C++ 代码会用到 absl 和 eigen 这两个库 虽然没有强行要求版本,也可以自己去下载,毕竟这个是把所有依赖包都拿下来了,可能其他包你也会用到,虽然比较臃肿,但推荐还是搞这个</p>
+<p> 不是推荐 就下<a href="https://github.com/protocolbuffers/protobuf/releases/tag/v2.6.1" target="_blank" rel="noopener">protobuf 2.6.1</a>这个版本吧 很稳</p>
+<p> 别忘了加入环境变量 测试一下↓</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">protoc --version</span><br></pre></td></tr></table></figure>
+
+<h4 id="动态库"><a href="#动态库" class="headerlink" title="动态库"></a>动态库</h4> <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mv tensorflow 1.13.1/ tensorflow/</span><br><span class="line"><span class="built_in">cd</span> tensorflow</span><br><span class="line">bazel build --config=opt //tensorflow:libtensorflow_cc.so</span><br></pre></td></tr></table></figure>
+
+<p>这里只编译C++, 个人爱好 也可自己编译C的, 不过C官方有API 推荐用人家的API, 除非不嫌麻烦造轮子</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bazel build --config=opt //tensorflow:libtensorflow.so</span><br></pre></td></tr></table></figure>
+
+<p>编译完目录下会出现 bazel-xxx 的几个文件</p>
+<p>动态库就在 bazel-bin/tensorflow 中</p>
+<h4 id="环境变量"><a href="#环境变量" class="headerlink" title="环境变量"></a>环境变量</h4><p>一般系统都默认/usr/local/include 或者 lib 库 加入环境变量了, 我们可以直接把需要的东西扔进去</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sudo mkdir /usr/<span class="built_in">local</span>/include/tf</span><br><span class="line">sudo cp -r bazel-genfiles/ /usr/<span class="built_in">local</span>/include/tf/</span><br><span class="line">sudo cp -r tensorflow/ /usr/<span class="built_in">local</span>/include/tf/</span><br><span class="line">sudo cp -r third_party/ /usr/<span class="built_in">local</span>/inlude/tf/</span><br><span class="line">sudo cp -r bazel-bin/tensorflow/libtensorflow_cc.so /usr/<span class="built_in">local</span>/lib/</span><br><span class="line">sudo cp -r bazel-bin/tensorflow/libtensorflow_framework.so /usr/<span class="built_in">local</span>/lib/</span><br></pre></td></tr></table></figure>
+
+<h4 id="示例程序"><a href="#示例程序" class="headerlink" title="示例程序"></a>示例程序</h4><p>代码有点多, 这里有给出一个<a href="https://github.com/George191/tensorflow-tutorial" target="_blank" rel="noopener">examples + model</a> 和一个<a href="https://github.com/George191/tensorflow_cpp" target="_blank" rel="noopener">CNN demo</a> （包含C的 可切换）<br>编译通过 Cmake 编译, 可自行更改 </p>
+<p>examples + model 结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Output tensor size:1</span><br><span class="line">Tensor&lt;type: float shape: [1,1] values: [14.9963112]&gt;</span><br><span class="line">Class 0 prob:14.9963,</span><br><span class="line">Final class id: 0</span><br><span class="line">Final value is: 14.9963</span><br><span class="line">Output Prediction Value:14.9963</span><br></pre></td></tr></table></figure>
+
+<p>CNN demo 结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">value[0] = 6.40457e-09</span><br><span class="line">value[1] = 2.41816e-07</span><br><span class="line">value[2] = 3.60118e-08</span><br><span class="line">value[3] = 1.18324e-09</span><br><span class="line">value[4] = 6.13108e-11</span><br><span class="line">value[5] = 0.00021271</span><br><span class="line">value[6] = 2.01991e-11</span><br><span class="line">value[7] = 3.94614e-05</span><br><span class="line">value[8] = 1.17029e-10</span><br><span class="line">value[9] = 0.999748</span><br><span class="line">Predict: 9 Label: Ankle boot</span><br></pre></td></tr></table></figure>
+
+<h2 id="C-过程-1"><a href="#C-过程-1" class="headerlink" title="C 过程"></a>C 过程</h2><h4 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h4><table>
+<thead>
+<tr>
+<th align="center">TensorFlow C 库</th>
+<th align="center">网址</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Linux</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">Linux（仅支持 CPU）</td>
+<td align="center"><a href="https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-linux-x86_64-1.13.1.tar.gz" target="_blank" rel="noopener">https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-linux-x86_64-1.13.1.tar.gz</a></td>
+</tr>
+<tr>
+<td align="center">Linux（支持 GPU）</td>
+<td align="center"><a href="https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-gpu-linux-x86_64-1.13.1.tar.gz" target="_blank" rel="noopener">https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-gpu-linux-x86_64-1.13.1.tar.gz</a></td>
+</tr>
+<tr>
+<td align="center">macOS</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">macOS（仅支持 CPU）</td>
+<td align="center"><a href="https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-darwin-x86_64-1.13.1.tar.gz" target="_blank" rel="noopener">https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-darwin-x86_64-1.13.1.tar.gz</a></td>
+</tr>
+<tr>
+<td align="center">Windows</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">Windows（仅支持 CPU）</td>
+<td align="center"><a href="https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-windows-x86_64-1.13.1.zip" target="_blank" rel="noopener">https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-windows-x86_64-1.13.1.zip</a></td>
+</tr>
+<tr>
+<td align="center">Windows（仅支持 GPU）</td>
+<td align="center"><a href="https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-gpu-windows-x86_64-1.13.1.zip" target="_blank" rel="noopener">https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-gpu-windows-x86_64-1.13.1.zip</a></td>
+</tr>
+</tbody></table>
+<h4 id="解压缩"><a href="#解压缩" class="headerlink" title="解压缩"></a>解压缩</h4><p>解压缩下载的归档文件，其中包含要包含在 C 程序中的头文件以及要与之关联的共享库。在 Linux 和 macOS 上，您可能需要解压缩到 /usr/local/lib：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo tar -C /usr/<span class="built_in">local</span> -xzf <span class="string">"downloaded file"</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="连接器"><a href="#连接器" class="headerlink" title="连接器"></a>连接器</h4><p>在 Linux/macOS 上，如果将 TensorFlow C 库解压缩到系统目录（例如 /usr/local），请使用 ldconfig 配置链接器：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo ldconfig</span><br></pre></td></tr></table></figure>
+
+<p>如果将 TensorFlow C 库解压缩到非系统目录（例如 ~/mydir），请配置链接器环境变量：</p>
+<table>
+<thead>
+<tr>
+<th align="center">Linux</th>
+<th align="center">mac OS</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">export LIBRARY_PATH=$LIBRARY_PATH:~/mydir/lib</td>
+<td align="center">export LIBRARY_PATH=$LIBRARY_PATH:~/mydir/lib</td>
+</tr>
+<tr>
+<td align="center">export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/mydir/lib</td>
+<td align="center">export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:~/mydir/lib</td>
+</tr>
+</tbody></table>
+<h4 id="示例程序-1"><a href="#示例程序-1" class="headerlink" title="示例程序"></a>示例程序</h4><p>安装 TensorFlow C 库后，使用以下源代码创建一个示例程序 (hello_tf.c)：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &lt;tensorflow/c/c_api.h&gt;</span><br><span class="line"></span><br><span class="line">int main() &#123;</span><br><span class="line">  printf(&quot;Hello from TensorFlow C library version %s\n&quot;, TF_Version());</span><br><span class="line">  return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h4><p>编译示例程序以创建可执行文件，然后运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gcc hello_tf.c -ltensorflow -o hello_tf</span><br><span class="line">./hello_tf</span><br></pre></td></tr></table></figure>
+
+<p>上述命令会输出：Hello from TensorFlow C library version number<br>成功：TensorFlow C 库已配置完毕。</p>
+<p>如果程序无法编译，请确保 gcc 可以访问 TensorFlow C 库。如果解压缩到 /usr/local，请将库位置显式传递给编译器：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc -I/usr/<span class="built_in">local</span>/include -L/usr/<span class="built_in">local</span>/lib hello_tf.c -ltensorflow -o hello_tf</span><br></pre></td></tr></table></figure>
+
+<h6 id="参数含义"><a href="#参数含义" class="headerlink" title="参数含义:"></a>参数含义:</h6><h6 id="a-I-usr-local-include-tf-gt-依赖的include文件"><a href="#a-I-usr-local-include-tf-gt-依赖的include文件" class="headerlink" title="a) -I/usr/local/include/tf &gt; 依赖的include文件"></a>a) -I/usr/local/include/tf &gt; 依赖的include文件</h6><h6 id="b-L-usr-local-lib-libtensorflow-cc-gt-编译好的libtensorflow-cc-so文件所在的目录"><a href="#b-L-usr-local-lib-libtensorflow-cc-gt-编译好的libtensorflow-cc-so文件所在的目录" class="headerlink" title="b) -L/usr/local/lib/libtensorflow_cc &gt; 编译好的libtensorflow_cc.so文件所在的目录"></a>b) -L/usr/local/lib/libtensorflow_cc &gt; 编译好的libtensorflow_cc.so文件所在的目录</h6><h6 id="c-ltensorflow-cc-gt-so动态库的名字"><a href="#c-ltensorflow-cc-gt-so动态库的名字" class="headerlink" title="c) -ltensorflow_cc &gt; .so动态库的名字"></a>c) -ltensorflow_cc &gt; .so动态库的名字</h6><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>系列问题不一一列上, 说实话这里的错有的真的烦人, 可以在留言区给我留言, 或者去github tensorflow 的 issue找一下或留言 ╮(╯▽╰)╭）</p>
+<p>感觉有帮助可以在下方打赏哦 (#^.^#)， 你的支持就是我的动力</p>
+</div></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">George</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://www.george191.com/2019/08/06/Tensorflow-C-CPP 最简单的指南/">http://www.george191.com/2019/08/06/Tensorflow-C-CPP 最简单的指南/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://www.george191.com">George</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/C/">C++    </a><a class="post-meta__tags" href="/tags/tensorflow/">tensorflow    </a></div><div class="post_share"><div class="social-share" data-image="https://s2.ax1x.com/2019/08/10/eq427Q.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script></div></div><div class="post-reward"><a class="reward-buttom"><i class="fa fa-qrcode"></i> 打赏<div class="reward-main"><ul class="reward-all"><li class="reward-item"><img class="lozad post-qr-code__img" data-src="https://s2.ax1x.com/2019/08/11/ejGGX6.jpg"><div class="post-qr-code__desc">微信</div></li><li class="reward-item"><img class="lozad post-qr-code__img" data-src="https://s2.ax1x.com/2019/08/11/ejGYnK.jpg"><div class="post-qr-code__desc">支付宝</div></li></ul></div></a></div><nav class="pagination_post" id="pagination"><div class="prev-post pull-full"><a href="/2019/08/06/Jupyter-C-JAVA超快速内核配置/"><img class="prev_cover lozad" data-src="https://s2.ax1x.com/2019/08/10/eq4hhn.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="label">上一篇</div><div class="prev_info"><span>Jupyter C JAVA 快速内核搭建</span></div></a></div></nav><div class="relatedPosts"><div class="relatedPosts_headline"><i class="fa fa-fw fa-thumbs-up" aria-hidden="true"></i><span>相关推荐</span></div><div class="relatedPosts_list"><div class="relatedPosts_item"><a href="/2019/08/06/Jupyter-C-JAVA超快速内核配置/" title="Jupyter C JAVA 快速内核搭建"><img class="relatedPosts_cover lozad" data-src="https://s2.ax1x.com/2019/08/10/eq4hhn.jpg"><div class="relatedPosts_title">Jupyter C JAVA 快速内核搭建</div></a></div></div><div class="clear_both"></div></div><hr><div id="post-comment"><div class="comment_headling"><i class="fa fa-comments fa-fw" aria-hidden="true"></i><span>评论</span></div><div id="gitalk-container"></div><script>var gitalk = new Gitalk({
+  clientID: '9ba6cea8102afcd3a135',
+  clientSecret: '3b2325aeeb4f96f5574a2736c6028a3a47dd5fa2',
+  repo: 'george191.github.io',
+  owner: 'george191',
+  admin: 'george191',
+  id: md5(decodeURI(location.pathname)),
+  language: ''
+})
+gitalk.render('gitalk-container')</script></div></div></div><footer><div class="layout" id="footer"><div class="copyright">&copy;2019 By George</div><div class="framework-info"><span>驱动 </span><a href="http://hexo.io"><span>Hexo</span></a><span class="footer-separator">|</span><span>主题 </span><a href="https://github.com/jerryc127/hexo-theme-butterfly"><span>Butterfly</span></a></div></div></footer><i class="fa fa-arrow-up" id="go-up" aria-hidden="true"></i><section class="rightside" id="rightside"><i class="fa fa-book" id="readmode" title="阅读模式"> </i><i class="fa fa-plus" id="font_plus" title="放大字体"></i><i class="fa fa-minus" id="font_minus" title="缩小字体"></i><a class="translate_chn_to_cht" id="translateLink" href="javascript:translatePage();" title="简繁转换">简</a><i class="fa fa-moon-o nightshift" id="nightshift" title="夜间模式"></i></section><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/live2d/js/live2d.js"></script><script src="/live2d/js/message.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script><script src="https://cdn.jsdelivr.net/npm/lozad/dist/lozad.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/nightshift.js"></script><script id="ribbon" src="/js/third-party/canvas-ribbon.js" size="150" alpha="0.6" zindex="-1" data-click="false"></script><script id="ribbon" src="https://cdn.jsdelivr.net/gh/jerryc127/CDN@latest/js/piao.js"></script><script src="/js/baidupush.js"> </script><script src="/js/tw_cn.js"></script><script>translateInitilization()
+
+</script><script src="https://cdn.jsdelivr.net/npm/instant.page@1.2.2/instantpage.min.js" type="module"></script></body></html>
